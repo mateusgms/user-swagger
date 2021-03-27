@@ -57,14 +57,12 @@ export class UsersService {
   }
   generateTokenByEmail(email: string): string {
     let user = this.users.find(user => user.email == email)
-    console.log(user.token)
     return user.token
 
   }
-  generateTokenByCpf(cpf: string): User {
+  generateTokenByCpf(cpf: string): String {
     let user = this.users.find(user => user.cpf == cpf)
-    user.token = Math.floor(Math.random() * (5 - 4)).toString();
-    return user
+    return user.token
   }
   findAll(): User[] {
     return this.users
@@ -75,8 +73,15 @@ export class UsersService {
     user = createUserDto
     return user
   }
-  getUserByToken(token: string, newPassword: string): void {
-    let user = this.users.find(user => user.token == token)
-    user.password = newPassword
+  getUserByToken(token: string, newPassword: string): string {
+    try {
+      let user = this.users.find(user => user.token == token)
+      user.password = newPassword
+      return "senha alterada"
+    } catch (error) {
+      return "token invalido"
+    }
+    
+    
   }
 }

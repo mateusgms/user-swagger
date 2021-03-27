@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
@@ -12,7 +13,10 @@ export class UsersController {
 
     @Post()
     @ApiOperation({ summary: 'Create user' })
-    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({
+        status: 403,
+        description: 'Forbidden.'
+    })
     async create(@Body() createUserDto: CreateUserDto): Promise<User> {
         return this.usersService.create(createUserDto);
     }
@@ -42,35 +46,37 @@ export class UsersController {
     findAll(): User[] {
         return this.usersService.findAll();
     }
-    @Get(':email')
+
+    
+    @Get('/recover/email/:email')
     @ApiOperation({ summary: 'Reset password by email' })
     @ApiResponse({
         status: 200,
         description: 'Check your e-mail!',
-        type: String,
+        type: User,
     })
-    resetPasswordByEmail(@Param('email') email: string): Object {
-        let token = this.usersService.generateTokenByEmail(email)
-        return { "sass": token }
+    resetPasswordByEmail(@Param('email') email: string): string {
+        return this.usersService.generateTokenByEmail(email)
     }
-    @Get(':cpf')
+    @Get('/recover/cpf/:cpf')
     @ApiOperation({ summary: 'Reset password by cpf' })
     @ApiResponse({
         status: 200,
-        description: 'Check your e-mail!'
+        description: 'Check your e-mail!',
+        type: User
     })
-    resetPasswordByCpf(@Param('cpf') cpf: string): string {
+    resetPasswordByCpf(@Param('cpf') cpf: string): String {
         let user = this.usersService.generateTokenByCpf(cpf)
-        return user.token
+        return user
     }
-    @Post(':token')
+    @Post('resetpassword/')
     @ApiOperation({ summary: 'Reset password with token' })
     @ApiResponse({
         status: 200,
         description: 'Reset password!'
     })
-    resetPassword(@Param('token') token: string, @Body() password: string): string {
-        let user = this.usersService.getUserByToken(token, password)
-        return 'Senha alterada'
+    resetPassword(@Body() updatePassword: UpdatePasswordDto): string {
+        let text = this.usersService.getUserByToken(updatePassword.token, updatePassword.password)
+        return text
     }
 }
