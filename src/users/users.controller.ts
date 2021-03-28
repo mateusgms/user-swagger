@@ -22,9 +22,14 @@ export class UsersController {
     }
     @Put(':id')
     @ApiOperation({ summary: 'Update an user' })
-    updateOne(@Param('id') id: number, @Body() createUserDto: CreateUserDto): User {
-        let user = this.usersService.updateUser(id, createUserDto)
-        return user
+    updateOne(@Param('id') id: number, @Body() createUserDto: CreateUserDto): any {
+        let user
+        let response = this.usersService.updateUser(id, createUserDto).then(_user => {
+            if (_user != null) return user = _user
+            return 'Invalid CPF'
+        }).catch(e => { return 'Something wrong with your form: ' + e })
+        return response
+
     }
     @Get(':id')
     @ApiOperation({ summary: 'Get an single user' })
@@ -34,7 +39,8 @@ export class UsersController {
         type: User,
     })
     findOne(@Param('id') id: string): User {
-        return this.usersService.findOne(+id);
+        let user = this.usersService.findOne(+id).then(_user => user = _user);
+        return user
     }
     @Get()
     @ApiOperation({ summary: 'Get all users' })
@@ -47,7 +53,7 @@ export class UsersController {
         return this.usersService.findAll();
     }
 
-    
+
     @Get('/recover/email/:email')
     @ApiOperation({ summary: 'Reset password by email' })
     @ApiResponse({

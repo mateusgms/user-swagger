@@ -1,5 +1,17 @@
 import { ApiProperty } from "@nestjs/swagger";
 
+
+enum Tipo {
+    ADMIN,
+    CONVIDADO
+}
+enum Access {
+    CREATE,
+    UPDATE,
+    REMOVE,
+    READ
+}
+
 export class User {
     /**
     * The name of the Cat
@@ -29,6 +41,12 @@ export class User {
     cpf: string;
 
     @ApiProperty({
+        example: 'YourPassword',
+        description: 'Users password',
+    })
+    password: string;
+
+    @ApiProperty({
         description: 'auto generated token',
     })
     token?: string;
@@ -36,17 +54,17 @@ export class User {
         example: "token123",
         description: 'permision access',
     })
-    access: number;
-
+    access?: Array<String>;
     @ApiProperty({
-        example: 'YourPassword',
-        description: 'Users password',
+        example:"CREATE",
+        description:"",
     })
-    password: string;
+    tipo?: Tipo;
 
     @ApiProperty({
-
         description: 'Creation Date, created by application',
     })
     creationDate: Date;
+    
+
 }

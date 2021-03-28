@@ -1,6 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+enum Tipo {
+  ADMIN,
+  CONVIDADO
+}
+enum Access {
+  CREATE,
+  UPDATE,
+  REMOVE,
+  READ
+}
+
+type TipoStrings = keyof typeof Tipo;
+type TipoAccess = keyof typeof Access;
 
 @Injectable()
 export class UsersService {
@@ -12,9 +25,10 @@ export class UsersService {
     email: "mateus@mateus.com",
     cpf: "12312312312",
     password: "12345",
-    access: 1,
+    access: ["READ"],
     token: "1234567",
-    creationDate: new Date
+    tipo: Tipo["CONVIDADO"],
+    creationDate: new Date,
   },
   {
     id: "2",
@@ -22,9 +36,10 @@ export class UsersService {
     email: "marcos@marcos.com",
     cpf: "32112312312",
     password: "12345",
-    access: 2,
+    access: ["READ"],
+    tipo: Tipo["CONVIDADO"],
     token: "123456",
-    creationDate: new Date
+    creationDate: new Date,
   },
   {
     id: "3",
@@ -32,7 +47,8 @@ export class UsersService {
     email: "felipe@felipe.com",
     cpf: "32312312312",
     password: "12345",
-    access: 1,
+    access: ["READ"],
+    tipo: Tipo["CONVIDADO"],
     token: "12345",
     creationDate: new Date
   },
@@ -42,18 +58,27 @@ export class UsersService {
     email: "Reinald@Reinald.com",
     cpf: "32315312312",
     password: "12345",
-    access: 0,
+    access: ["READ"],
+    tipo: Tipo["ADMIN"],
     token: "1234",
     creationDate: new Date
   }];
 
   create(user: CreateUserDto): User {
+    // this.users.find(_user => )
     this.users.push(user);
     return user;
   }
 
-  findOne(id: number): User {
-    return this.users.find(user => parseInt(user.id) == id);
+  findOne(id: number): Promise<User> {
+    let user
+    return new Promise<User>((resolve, reject) => {
+      try {
+        resolve(user = this.users.find(user => parseInt(user.id) == id))
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
   generateTokenByEmail(email: string): string {
     let user = this.users.find(user => user.email == email)
@@ -67,10 +92,18 @@ export class UsersService {
   findAll(): User[] {
     return this.users
   }
-  updateUser(id: number, createUserDto: CreateUserDto): User {
-    let user = this.findOne(id)
+  updateUser(id: number, createUserDto: CreateUserDto): Promise<User> {
+    let user = this.findOne(id).then((user) => {
+      if (createUserDto.cpf == user.cpf) {
+        let tipo = Tipo[createUserDto.tipo]
 
-    user = createUserDto
+        user.tipo = this.addTipo(Tipo[tipo])
+        //Object.keys(this.addAccess(createUserDto.access))
+        //user.access = this.addAccess(Access[createUserDto.access])
+        user = createUserDto
+        return user
+      }
+    })
     return user
   }
   getUserByToken(token: string, newPassword: string): string {
@@ -81,7 +114,24 @@ export class UsersService {
     } catch (error) {
       return "token invalido"
     }
-    
-    
+  }
+  addTipo(tipo: TipoStrings) {
+    let _tipo = Tipo[tipo] == 1 ? 1 : Tipo[tipo]
+    return _tipo
+
+  }
+  addAccess(access: Array<TipoAccess>) {
+    let _access
+    return _access = Object.keys(this.handleAccess(access))
+  }
+  handleAccess(access: Array<TipoAccess>): Object {
+    let objAcess = Object.create(Access);
+    for (let i = 0; i < access.length; i++) {
+      const element = access[i];
+      if (Access[element] != undefined) {
+        objAcess[element] = ''
+      }
+    }
+    return objAcess
   }
 }
