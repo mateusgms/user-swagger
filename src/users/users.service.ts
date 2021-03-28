@@ -13,19 +13,19 @@ enum Access {
 }
 
 type TipoStrings = keyof typeof Tipo;
-type TipoAccess = keyof typeof Access;
+type AccessString = keyof typeof Access;
 
 @Injectable()
 export class UsersService {
 
-  token
+  
   private readonly users: User[] = [{
     id: "1",
     name: "Mateus",
     email: "mateus@mateus.com",
     cpf: "12312312312",
     password: "12345",
-    access: ["READ"],
+    access: [Access["READ"]],
     token: "1234567",
     tipo: Tipo["CONVIDADO"],
     creationDate: new Date,
@@ -36,7 +36,7 @@ export class UsersService {
     email: "marcos@marcos.com",
     cpf: "32112312312",
     password: "12345",
-    access: ["READ"],
+    access: [Access["READ"]],
     tipo: Tipo["CONVIDADO"],
     token: "123456",
     creationDate: new Date,
@@ -47,7 +47,7 @@ export class UsersService {
     email: "felipe@felipe.com",
     cpf: "32312312312",
     password: "12345",
-    access: ["READ"],
+    access: [Access["READ"]],
     tipo: Tipo["CONVIDADO"],
     token: "12345",
     creationDate: new Date
@@ -58,16 +58,19 @@ export class UsersService {
     email: "Reinald@Reinald.com",
     cpf: "32315312312",
     password: "12345",
-    access: ["READ"],
+    access: [Access["READ"]],
     tipo: Tipo["ADMIN"],
     token: "1234",
     creationDate: new Date
   }];
 
   create(user: CreateUserDto): User {
-    // this.users.find(_user => )
-    this.users.push(user);
-    return user;
+    if (true) {
+      let tipo = Tipo[user.tipo]
+      user.tipo = this.addTipo(Tipo[tipo])
+      user.access = this.addAccess(user.access)
+      return user
+    }
   }
 
   findOne(id: number): Promise<User> {
@@ -96,11 +99,9 @@ export class UsersService {
     let user = this.findOne(id).then((user) => {
       if (createUserDto.cpf == user.cpf) {
         let tipo = Tipo[createUserDto.tipo]
-
-        user.tipo = this.addTipo(Tipo[tipo])
-        //Object.keys(this.addAccess(createUserDto.access))
-        //user.access = this.addAccess(Access[createUserDto.access])
         user = createUserDto
+        user.tipo = this.addTipo(Tipo[tipo])
+        user.access = this.addAccess(createUserDto.access)
         return user
       }
     })
@@ -120,18 +121,18 @@ export class UsersService {
     return _tipo
 
   }
-  addAccess(access: Array<TipoAccess>) {
+  addAccess(access: Array<Access>): Array<Access> {
     let _access
-    return _access = Object.keys(this.handleAccess(access))
+    return _access = this.handleAccess(access)
   }
-  handleAccess(access: Array<TipoAccess>): Object {
-    let objAcess = Object.create(Access);
+  handleAccess(access: Array<Access>): Array<Access> {
+    let accessArray: Array<Access> = []
     for (let i = 0; i < access.length; i++) {
       const element = access[i];
-      if (Access[element] != undefined) {
-        objAcess[element] = ''
+      if (Access[element] != undefined && !accessArray.find(e => Access[e] == Access[element]) ) {
+        accessArray.push(element)
       }
     }
-    return objAcess
+    return accessArray
   }
 }

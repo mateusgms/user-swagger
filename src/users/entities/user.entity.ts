@@ -54,7 +54,7 @@ export class User {
         example: "token123",
         description: 'permision access',
     })
-    access?: Array<String>;
+    access?: Array<Access>;
     @ApiProperty({
         example:"CREATE",
         description:"",

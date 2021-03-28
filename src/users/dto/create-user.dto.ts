@@ -11,9 +11,6 @@ enum Access {
     READ
 }
 
-type TipoStrings = keyof typeof Tipo;
-type TipoAccess = keyof typeof Access;
-
 export class CreateUserDto {
 
     id: string;
@@ -31,25 +28,9 @@ export class CreateUserDto {
 
     token?: string;
 
-    access?: Array<String>;
+    access?: Array<Access>;
 
     tipo?: Tipo
     
     creationDate: Date;
-    addTipo( tipo: TipoStrings, ) {
-        this.tipo = Tipo[tipo] == undefined ? 1 : Tipo[tipo]
-    }
-    addAccess(access: Array<TipoAccess>){
-        this.access = Object.keys(this.handleAccess(access))
-    }
-    handleAccess(access: Array<TipoAccess>): Object {
-        let objAcess = Object.create(Access);
-        for (let i = 0; i < access.length; i++) {
-            const element = access[i];
-            if (Access[element] != undefined) {
-                objAcess[element] = ''
-            }
-        }
-        return objAcess
-    }
 }
