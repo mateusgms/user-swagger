@@ -1,0 +1,19 @@
+{
+  "type": "sqlite",
+  "host": "127.0.0.1",
+  "port": 3306,
+  "username": "postgres",
+  "password": "mtsgms0607",
+  "database": "userapi",
+  "entities": [
+    "/**/*.entity{.ts,.js}"
+  ],
+  "migrationsTableName": "migration",
+  "migrations": [
+    "src/migration/*.ts"
+  ],
+  "cli": {
+    "migrationsDir": "src/migration"
+  },
+  "ssl": false
+}

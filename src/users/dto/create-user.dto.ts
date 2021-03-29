@@ -13,24 +13,26 @@ enum Access {
 
 export class CreateUserDto {
 
-    id: string;
+    ID: string;
 
-    name: string;
+    NAME: string;
 
     @IsEmail()
-    email: string;
+    EMAIL: string;
 
     @IsNotEmpty()
-    cpf: string;
+    CPF: string;
 
     @IsNotEmpty()
-    password: string;
+    PASSWORD: string;
 
-    token?: string;
+    TOKEN_PASSWORD?: string;
 
-    access?: Array<Access>;
+    ACCESS?: Array<Access>;
 
-    tipo?: Tipo
+    TYPE?: Tipo
     
-    creationDate: Date;
+    CREATED_AT: Date;
+
+    UPDATED_AT: Date;
 }

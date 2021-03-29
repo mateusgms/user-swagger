@@ -72,8 +72,7 @@ export class UsersController {
         type: User
     })
     resetPasswordByCpf(@Param('cpf') cpf: string): String {
-        let user = this.usersService.generateTokenByCpf(cpf)
-        return user
+        return this.usersService.generateTokenByCpf(cpf)
     }
     @Post('resetpassword/')
     @ApiOperation({ summary: 'Reset password with token' })

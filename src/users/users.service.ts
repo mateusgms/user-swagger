@@ -18,57 +18,63 @@ type AccessString = keyof typeof Access;
 @Injectable()
 export class UsersService {
 
-  
+
   private readonly users: User[] = [{
-    id: "1",
-    name: "Mateus",
-    email: "mateus@mateus.com",
-    cpf: "12312312312",
-    password: "12345",
-    access: [Access["READ"]],
-    token: "1234567",
-    tipo: Tipo["CONVIDADO"],
-    creationDate: new Date,
+    ID: "1",
+    NAME: "Mateus",
+    EMAIL: "mateus@mateus.com",
+    CPF: "12312312312",
+    PASSWORD: "12345",
+    ACCESS: [Access["READ"]],
+    TYPE: Tipo["CONVIDADO"],
+    TOKEN_PASSWORD: "1234567",
+    CREATED_AT: new Date,
+    UPDATED_AT: new Date
   },
   {
-    id: "2",
-    name: "Marcos",
-    email: "marcos@marcos.com",
-    cpf: "32112312312",
-    password: "12345",
-    access: [Access["READ"]],
-    tipo: Tipo["CONVIDADO"],
-    token: "123456",
-    creationDate: new Date,
+    ID: "2",
+    NAME: "Marcos",
+    EMAIL: "marcos@marcos.com",
+    CPF: "32112312312",
+    PASSWORD: "12345",
+    ACCESS: [Access["READ"]],
+    TYPE: Tipo["CONVIDADO"],
+    TOKEN_PASSWORD: "123456",
+    CREATED_AT: new Date,
+    UPDATED_AT: new Date
   },
   {
-    id: "3",
-    name: "Felipe",
-    email: "felipe@felipe.com",
-    cpf: "32312312312",
-    password: "12345",
-    access: [Access["READ"]],
-    tipo: Tipo["CONVIDADO"],
-    token: "12345",
-    creationDate: new Date
+    ID: "3",
+    NAME: "Felipe",
+    EMAIL: "felipe@felipe.com",
+    CPF: "32312312312",
+    PASSWORD: "12345",
+    ACCESS: [Access["READ"]],
+    TYPE: Tipo["CONVIDADO"],
+    TOKEN_PASSWORD: "12345",
+    CREATED_AT: new Date,
+
+    UPDATED_AT: new Date
   },
   {
-    id: "4",
-    name: "Reinald",
-    email: "Reinald@Reinald.com",
-    cpf: "32315312312",
-    password: "12345",
-    access: [Access["READ"]],
-    tipo: Tipo["ADMIN"],
-    token: "1234",
-    creationDate: new Date
+    ID: "4",
+    NAME: "Reinald",
+    EMAIL: "Reinald@Reinald.com",
+    CPF: "32315312312",
+    PASSWORD: "12345",
+    ACCESS: [Access["READ"]],
+    TYPE: Tipo["ADMIN"],
+    TOKEN_PASSWORD: "1234",
+    CREATED_AT: new Date,
+
+    UPDATED_AT: new Date
   }];
 
   create(user: CreateUserDto): User {
     if (true) {
-      let tipo = Tipo[user.tipo]
-      user.tipo = this.addTipo(Tipo[tipo])
-      user.access = this.addAccess(user.access)
+      let tipo = Tipo[user.TYPE]
+      user.TYPE = this.addTipo(Tipo[tipo])
+      user.ACCESS = this.addAccess(user.ACCESS)
       return user
     }
   }
@@ -77,31 +83,30 @@ export class UsersService {
     let user
     return new Promise<User>((resolve, reject) => {
       try {
-        resolve(user = this.users.find(user => parseInt(user.id) == id))
+        resolve(user = this.users.find(user => parseInt(user.ID) == id))
       } catch (error) {
         reject(error)
       }
     })
   }
   generateTokenByEmail(email: string): string {
-    let user = this.users.find(user => user.email == email)
-    return user.token
-
+    let user = this.users.find(user => user.EMAIL == email)
+    return user.TOKEN_PASSWORD
   }
   generateTokenByCpf(cpf: string): String {
-    let user = this.users.find(user => user.cpf == cpf)
-    return user.token
+    let user = this.users.find(user => user.CPF == cpf)
+    return user.TOKEN_PASSWORD
   }
   findAll(): User[] {
     return this.users
   }
   updateUser(id: number, createUserDto: CreateUserDto): Promise<User> {
     let user = this.findOne(id).then((user) => {
-      if (createUserDto.cpf == user.cpf) {
-        let tipo = Tipo[createUserDto.tipo]
+      if (createUserDto.CPF == user.CPF) {
+        let tipo = Tipo[createUserDto.TYPE]
         user = createUserDto
-        user.tipo = this.addTipo(Tipo[tipo])
-        user.access = this.addAccess(createUserDto.access)
+        user.TYPE = this.addTipo(Tipo[tipo])
+        user.ACCESS = this.addAccess(createUserDto.ACCESS)
         return user
       }
     })
@@ -109,12 +114,18 @@ export class UsersService {
   }
   getUserByToken(token: string, newPassword: string): string {
     try {
-      let user = this.users.find(user => user.token == token)
-      user.password = newPassword
+      let user = this.users.find(user => user.TOKEN_PASSWORD == token)
+      user.PASSWORD = newPassword
       return "senha alterada"
     } catch (error) {
       return "token invalido"
     }
+  }
+  getUserByEmail(email: string): User {
+    return this.users.find(user => user.EMAIL == email)
+  }
+  getUserByCpf(cpf: string): User {
+    return this.users.find(user => user.CPF == cpf)
   }
   addTipo(tipo: TipoStrings) {
     let _tipo = Tipo[tipo] == 1 ? 1 : Tipo[tipo]
@@ -129,7 +140,7 @@ export class UsersService {
     let accessArray: Array<Access> = []
     for (let i = 0; i < access.length; i++) {
       const element = access[i];
-      if (Access[element] != undefined && !accessArray.find(e => Access[e] == Access[element]) ) {
+      if (Access[element] != undefined && !accessArray.find(e => Access[e] == Access[element])) {
         accessArray.push(element)
       }
     }
