@@ -2,7 +2,17 @@
 
 ### Installation
 
+Install libs
 `npm install`
+
+Up Db container
+`docker-compose up -d`
+
+Run migrations
+`npm run typeorm:migrations:generate`
+
+Run app
+`npm run start:dev`
 
 ### Running
 

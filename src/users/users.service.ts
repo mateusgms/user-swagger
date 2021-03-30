@@ -73,7 +73,7 @@ export class UsersService {
       let tipo = Tipo[user.TYPE]
       user.TYPE = this.addTipo(Tipo[tipo])
       user.ACCESS = this.addAccess(user.ACCESS)
-      this.usersRepository.insert(user).then(result => console.log(result)).catch(e => console.log(e))
+      this.usersRepository.insert(user).then(result => console.log(result)).catch(e => { return e })
       return user
     }
   }
@@ -97,6 +97,7 @@ export class UsersService {
     return user.TOKEN_PASSWORD
   }
   findAll(): User[] {
+    this.usersRepository.
     return this.users
   }
   updateUser(id: number, createUserDto: CreateUserDto): Promise<User> {

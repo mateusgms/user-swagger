@@ -40,7 +40,7 @@ export class User {
     TOKEN_PASSWORD?: string;
 
     @ApiProperty()
-    @Column({ type: 'enum', enum:Access })
+    @Column({ type: 'enum', enum:[Access] })
     ACCESS?: Array<Access>;
 
     @ApiProperty()
