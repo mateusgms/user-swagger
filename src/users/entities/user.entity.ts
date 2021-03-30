@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 
 enum Tipo {
@@ -12,40 +12,39 @@ enum Access {
     REMOVE,
     READ
 }
-
+@Entity('User')
 export class User {
-    /**
-    * The name of the Cat
-    * @example Mat
-    */
-    @PrimaryGeneratedColumn('uuid')
 
+    @ApiProperty()
+    @PrimaryGeneratedColumn('uuid')
     ID: string;
 
+    @ApiProperty()
     @Column({ type: 'varchar' })
     NAME: string;
 
-    @Column({ type: 'varchar' })
+    @ApiProperty()
+    @Column({ type: 'varchar', unique: true })
     EMAIL: string;
 
-    @Column({ type: 'varchar' })
+    @ApiProperty()
+    @Column({ type: 'varchar', unique: true })
     CPF: string;
 
+    @ApiProperty()
     @Column({ type: 'varchar' })
     PASSWORD: string;
 
-    @Column({ type: 'varchar', default: "12345" })
+    @ApiProperty()
+    @Column({ type: 'varchar' })
     TOKEN_PASSWORD?: string;
 
-    @Column({ type: 'array', default: ["READ"] })
+    @ApiProperty()
+    @Column({ type: 'enum', enum:Access })
     ACCESS?: Array<Access>;
 
-    @Column({ type: 'varchar', default: "CONVIDADO" })
+    @ApiProperty()
+    @Column({ type: 'enum', enum: Tipo, nullable:false })
     TYPE?: Tipo;
 
-    @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
-    CREATED_AT: Date;
-
-    @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
-    UPDATED_AT: Date;
 }

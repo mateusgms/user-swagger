@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
@@ -17,10 +17,12 @@ export class UsersController {
         status: 403,
         description: 'Forbidden.'
     })
+    @ApiBody({ type: CreateUserDto })
     async create(@Body() createUserDto: CreateUserDto): Promise<User> {
         return this.usersService.create(createUserDto);
     }
     @Put(':id')
+    @ApiBody({ type: CreateUserDto })
     @ApiOperation({ summary: 'Update an user' })
     updateOne(@Param('id') id: number, @Body() createUserDto: CreateUserDto): any {
         let user
@@ -65,16 +67,17 @@ export class UsersController {
         return this.usersService.generateTokenByEmail(email)
     }
     @Get('/recover/cpf/:cpf')
+    @ApiBody({ type: String })
     @ApiOperation({ summary: 'Reset password by cpf' })
     @ApiResponse({
         status: 200,
         description: 'Check your e-mail!',
-        type: User
     })
     resetPasswordByCpf(@Param('cpf') cpf: string): String {
         return this.usersService.generateTokenByCpf(cpf)
     }
     @Post('resetpassword/')
+    @ApiBody({ type: String })
     @ApiOperation({ summary: 'Reset password with token' })
     @ApiResponse({
         status: 200,

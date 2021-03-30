@@ -1,19 +1,11 @@
 {
-  "type": "sqlite",
-  "host": "127.0.0.1",
+  "type": "mysql",
+  "host": "localhost",
   "port": 3306,
-  "username": "postgres",
-  "password": "mtsgms0607",
-  "database": "userapi",
-  "entities": [
-    "/**/*.entity{.ts,.js}"
-  ],
-  "migrationsTableName": "migration",
-  "migrations": [
-    "src/migration/*.ts"
-  ],
-  "cli": {
-    "migrationsDir": "src/migration"
-  },
-  "ssl": false
+  "username": "root",
+  "password": "root",
+  "database": "test",
+  "autoLoadEntities": true,
+  "synchronize": true,
+  "entities":["./entities/**/*.{.ts,.js}"]
 }

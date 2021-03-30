@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 enum Tipo {
@@ -18,6 +20,8 @@ type AccessString = keyof typeof Access;
 @Injectable()
 export class UsersService {
 
+  constructor(@InjectRepository(User)
+  private readonly usersRepository: Repository<User>) { }
 
   private readonly users: User[] = [{
     ID: "1",
@@ -28,8 +32,7 @@ export class UsersService {
     ACCESS: [Access["READ"]],
     TYPE: Tipo["CONVIDADO"],
     TOKEN_PASSWORD: "1234567",
-    CREATED_AT: new Date,
-    UPDATED_AT: new Date
+
   },
   {
     ID: "2",
@@ -40,8 +43,7 @@ export class UsersService {
     ACCESS: [Access["READ"]],
     TYPE: Tipo["CONVIDADO"],
     TOKEN_PASSWORD: "123456",
-    CREATED_AT: new Date,
-    UPDATED_AT: new Date
+
   },
   {
     ID: "3",
@@ -52,9 +54,7 @@ export class UsersService {
     ACCESS: [Access["READ"]],
     TYPE: Tipo["CONVIDADO"],
     TOKEN_PASSWORD: "12345",
-    CREATED_AT: new Date,
 
-    UPDATED_AT: new Date
   },
   {
     ID: "4",
@@ -65,9 +65,7 @@ export class UsersService {
     ACCESS: [Access["READ"]],
     TYPE: Tipo["ADMIN"],
     TOKEN_PASSWORD: "1234",
-    CREATED_AT: new Date,
 
-    UPDATED_AT: new Date
   }];
 
   create(user: CreateUserDto): User {
@@ -75,6 +73,7 @@ export class UsersService {
       let tipo = Tipo[user.TYPE]
       user.TYPE = this.addTipo(Tipo[tipo])
       user.ACCESS = this.addAccess(user.ACCESS)
+      this.usersRepository.insert(user).then(result => console.log(result)).catch(e => console.log(e))
       return user
     }
   }

@@ -1,13 +1,11 @@
-version: '3'
-services:
+version: "3"
 
+services:
   mysql:
-    image: "mysql:5.7.10"
+    image: mysql:5
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
     ports:
       - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: "admin"
-      MYSQL_USER: "test"
-      MYSQL_PASSWORD: "test"
-      MYSQL_DATABASE: "test"
-
