@@ -96,9 +96,10 @@ export class UsersService {
     let user = this.users.find(user => user.CPF == cpf)
     return user.TOKEN_PASSWORD
   }
-  findAll(): User[] {
-    this.usersRepository.
-    return this.users
+  findAll(): Promise<User[]> {
+
+    return this.usersRepository.find().then(_users => { return _users; }).catch();
+
   }
   updateUser(id: number, createUserDto: CreateUserDto): Promise<User> {
     let user = this.findOne(id).then((user) => {

@@ -51,7 +51,7 @@ export class UsersController {
         description: 'The found record',
         type: [User],
     })
-    findAll(): User[] {
+    findAll(): Promise<User[]> {
         return this.usersService.findAll();
     }
 
