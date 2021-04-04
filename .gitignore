@@ -1,21 +1,10 @@
-# dependencies
-/node_modules
+.idea/
+.vscode/
+node_modules/
+build/
+tmp/
+temp/
+src/migration/
 
-# IDE
-/.idea
-/.awcache
-/.vscode
-
-# misc
-npm-debug.log
-
-# example
-/quick-start
-
-# tests
-/test
-/coverage
-/.nyc_output
-
-# dist
-/dist
+.env
+ormconfig.json

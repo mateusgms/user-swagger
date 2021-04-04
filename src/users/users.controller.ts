@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
@@ -12,25 +13,39 @@ export class UsersController {
 
     @Post()
     @ApiOperation({ summary: 'Create user' })
-    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({
+        status: 403,
+        description: 'Forbidden.'
+    })
+    @ApiBody({ type: CreateUserDto })
     async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+
         return this.usersService.create(createUserDto);
     }
-    @Put(':id')
+    @Put('/')
+    @ApiBody({ type: CreateUserDto })
+    @ApiQuery({ name: 'id' })
     @ApiOperation({ summary: 'Update an user' })
-    updateOne(@Param('id') id: number, @Body() createUserDto: CreateUserDto): User {
-        let user = this.usersService.updateUser(id, createUserDto)
-        return user
+    updateOne(@Query('id') id: string, @Body() createUserDto: CreateUserDto): any {
+        let user
+        let response = this.usersService.updateUser(id, createUserDto).then(_user => {
+            if (_user != null) return user = _user
+            return 'Invalid CPF'
+        }).catch(e => { return 'Something wrong with your form: ' + e })
+        return response
+
     }
-    @Get(':id')
+    @Get('/id/')
     @ApiOperation({ summary: 'Get an single user' })
+    @ApiQuery({ name: 'id' })
     @ApiResponse({
         status: 200,
         description: 'The found record',
         type: User,
     })
-    findOne(@Param('id') id: string): User {
-        return this.usersService.findOne(+id);
+    findOne(@Query('id') id: string): User {
+        let user = this.usersService.findOne(id).then(_user => user = _user);
+        return user
     }
     @Get()
     @ApiOperation({ summary: 'Get all users' })
@@ -39,38 +54,44 @@ export class UsersController {
         description: 'The found record',
         type: [User],
     })
-    findAll(): User[] {
+    async findAll(): Promise<User[]> {
         return this.usersService.findAll();
     }
-    @Get(':email')
+
+
+    @Get('/recover/email')
     @ApiOperation({ summary: 'Reset password by email' })
+    @ApiQuery({ name: 'email' })
     @ApiResponse({
         status: 200,
         description: 'Check your e-mail!',
-        type: String,
+        type: User,
     })
-    resetPasswordByEmail(@Param('email') email: string): Object {
-        let token = this.usersService.generateTokenByEmail(email)
-        return { "sass": token }
+    resetPasswordByEmail(@Query('email') email: string): Promise<string> {
+        return this.usersService.generateTokenByEmail(email)
     }
-    @Get(':cpf')
-    @ApiOperation({ summary: 'Reset password by cpf' })
+    @Get('/recover/cpf')
+    @ApiOperation({
+        summary: 'Reset password by cpf'
+    })
+    @ApiQuery({ name: 'cpf' })
     @ApiResponse({
         status: 200,
         description: 'Check your e-mail!'
     })
-    resetPasswordByCpf(@Param('cpf') cpf: string): string {
-        let user = this.usersService.generateTokenByCpf(cpf)
-        return user.token
+    resetPasswordByCpf(@Query('cpf') cpf: string): Promise<String> {
+
+        return this.usersService.generateTokenByCpf(cpf).catch()
     }
-    @Post(':token')
+    @Post('resetpassword/')
+    @ApiBody({ type: String })
     @ApiOperation({ summary: 'Reset password with token' })
     @ApiResponse({
         status: 200,
         description: 'Reset password!'
     })
-    resetPassword(@Param('token') token: string, @Body() password: string): string {
-        let user = this.usersService.getUserByToken(token, password)
-        return 'Senha alterada'
+    resetPassword(@Body() updatePassword: UpdatePasswordDto): Promise<string> {
+        let text = this.usersService.getUserByToken(updatePassword.token, updatePassword.password)
+        return text
     }
 }

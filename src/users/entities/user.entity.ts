@@ -1,52 +1,50 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
+
+enum Tipo {
+    ADMIN,
+    CONVIDADO
+}
+enum Access {
+    CREATE,
+    UPDATE,
+    REMOVE,
+    READ
+}
+@Entity('User')
 export class User {
-    /**
-    * The name of the Cat
-    * @example Mat
-    */
-    @ApiProperty({
-        description: 'auto generated ID',
-    })
-    id: string;
 
-    @ApiProperty({
-        example: 'Maine Coon',
-        description: 'User name',
-    })
-    name: string;
+    @ApiProperty()
+    @PrimaryGeneratedColumn('uuid')
+    ID: string;
 
-    @ApiProperty({
-        example: 'mateus@mateus.com',
-        description: 'A valid e-mail',
-    })
-    email: string;
+    @ApiProperty()
+    @Column({ type: 'varchar' })
+    NAME: string;
 
-    @ApiProperty({
-        example: '123.123.123-12',
-        description: 'valid CPF',
-    })
-    cpf: string;
+    @ApiProperty()
+    @Column({ type: 'varchar', unique: true })
+    EMAIL: string;
 
-    @ApiProperty({
-        description: 'auto generated token',
-    })
-    token?: string;
-    @ApiProperty({
-        example: "token123",
-        description: 'permision access',
-    })
-    access: number;
+    @ApiProperty()
+    @Column({ type: 'varchar', unique: true })
+    CPF: string;
 
-    @ApiProperty({
-        example: 'YourPassword',
-        description: 'Users password',
-    })
-    password: string;
+    @ApiProperty()
+    @Column({ type: 'varchar' })
+    PASSWORD: string;
 
-    @ApiProperty({
+    @ApiProperty()
+    @Column({ type: 'varchar' })
+    TOKEN_PASSWORD?: string;
 
-        description: 'Creation Date, created by application',
-    })
-    creationDate: Date;
+    @ApiProperty()
+    @Column({ type: 'set', enum: Access })
+    ACCESS?: Array<Access>;
+
+    @ApiProperty()
+    @Column({ type: 'enum', enum: Tipo, nullable: false })
+    TYPE?: Tipo;
+
 }

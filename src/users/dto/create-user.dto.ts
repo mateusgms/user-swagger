@@ -1,22 +1,43 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsNotEmpty } from "class-validator";
+
+enum Tipo {
+    ADMIN,
+    CONVIDADO
+}
+enum Access {
+    CREATE,
+    UPDATE,
+    REMOVE,
+    READ
+}
 
 export class CreateUserDto {
 
-    id: string;
+    ID: string;
 
-    name: string;
-    @IsNotEmpty()
-    cpf: string;
+    @ApiProperty({})
+    NAME: string;
 
+    @ApiProperty({})
     @IsEmail()
-    email: string;
+    EMAIL: string;
 
+    @ApiProperty({})
     @IsNotEmpty()
-    password: string;
+    CPF: string;
 
-    token?: string;
+    @ApiProperty({})
+    @IsNotEmpty()
+    PASSWORD: string;
 
-    access: number;
+    @ApiProperty({})
+    TOKEN_PASSWORD?: string;
 
-    creationDate: Date;
+    @ApiProperty({})
+    ACCESS?: Array<Access>;
+
+    @ApiProperty({})
+    TYPE?: Tipo;
+
 }
