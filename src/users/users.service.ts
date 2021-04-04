@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 enum Tipo {
@@ -23,120 +23,70 @@ export class UsersService {
   constructor(@InjectRepository(User)
   private readonly usersRepository: Repository<User>) { }
 
-  private readonly users: User[] = [{
-    ID: "1",
-    NAME: "Mateus",
-    EMAIL: "mateus@mateus.com",
-    CPF: "12312312312",
-    PASSWORD: "12345",
-    ACCESS: [Access["READ"]],
-    TYPE: Tipo["CONVIDADO"],
-    TOKEN_PASSWORD: "1234567",
 
-  },
-  {
-    ID: "2",
-    NAME: "Marcos",
-    EMAIL: "marcos@marcos.com",
-    CPF: "32112312312",
-    PASSWORD: "12345",
-    ACCESS: [Access["READ"]],
-    TYPE: Tipo["CONVIDADO"],
-    TOKEN_PASSWORD: "123456",
 
-  },
-  {
-    ID: "3",
-    NAME: "Felipe",
-    EMAIL: "felipe@felipe.com",
-    CPF: "32312312312",
-    PASSWORD: "12345",
-    ACCESS: [Access["READ"]],
-    TYPE: Tipo["CONVIDADO"],
-    TOKEN_PASSWORD: "12345",
-
-  },
-  {
-    ID: "4",
-    NAME: "Reinald",
-    EMAIL: "Reinald@Reinald.com",
-    CPF: "32315312312",
-    PASSWORD: "12345",
-    ACCESS: [Access["READ"]],
-    TYPE: Tipo["ADMIN"],
-    TOKEN_PASSWORD: "1234",
-
-  }];
-
-  create(user: CreateUserDto): User {
+  async create(user: CreateUserDto): Promise<any> {
     if (true) {
       let tipo = Tipo[user.TYPE]
-      user.TYPE = this.addTipo(Tipo[tipo])
+
       user.ACCESS = this.addAccess(user.ACCESS)
-      this.usersRepository.insert(user).then(result => console.log(result)).catch(e => { return e })
-      return user
+      let newUser = await getConnection().getRepository(User).insert(user).then(result => { return result }).catch(e => { return e })
+      return newUser
+
     }
   }
 
-  findOne(id: number): Promise<User> {
-    let user
-    return new Promise<User>((resolve, reject) => {
-      try {
-        resolve(user = this.users.find(user => parseInt(user.ID) == id))
-      } catch (error) {
-        reject(error)
-      }
-    })
-  }
-  generateTokenByEmail(email: string): string {
-    let user = this.users.find(user => user.EMAIL == email)
-    return user.TOKEN_PASSWORD
-  }
-  generateTokenByCpf(cpf: string): String {
-    let user = this.users.find(user => user.CPF == cpf)
-    return user.TOKEN_PASSWORD
+  async findOne(id: string): Promise<User> {
+    let user = await getConnection().getRepository(User).createQueryBuilder("user").where('user.ID = :id', { id: id }).getOne()
+    return user
   }
   findAll(): Promise<User[]> {
-
     return this.usersRepository.find().then(_users => { return _users; }).catch();
-
   }
-  updateUser(id: number, createUserDto: CreateUserDto): Promise<User> {
+  async generateTokenByEmail(email: string): Promise<string> {
+    let user = await getConnection().getRepository(User).createQueryBuilder("user").where('user.EMAIL = :email', { email: email }).getOne()
+    return user.TOKEN_PASSWORD
+  }
+  async generateTokenByCpf(cpf: string): Promise<String> {
+    let user = await getConnection().getRepository(User).createQueryBuilder("user").where('user.CPF = :cpf', { cpf: cpf }).getOne()
+    return user.TOKEN_PASSWORD
+  }
+
+  updateUser(id: string, createUserDto: CreateUserDto): Promise<User> {
     let user = this.findOne(id).then((user) => {
       if (createUserDto.CPF == user.CPF) {
         let tipo = Tipo[createUserDto.TYPE]
         user = createUserDto
-        user.TYPE = this.addTipo(Tipo[tipo])
+
         user.ACCESS = this.addAccess(createUserDto.ACCESS)
         return user
       }
     })
     return user
   }
-  getUserByToken(token: string, newPassword: string): string {
+  async getUserByToken(token: string, newPassword: string): Promise<string> {
     try {
-      let user = this.users.find(user => user.TOKEN_PASSWORD == token)
+      let user = await getConnection().getRepository(User).createQueryBuilder().select('User').from(User, "user").where('user.TOKEN_PASSWORD = :token', { token: token }).getOne()
       user.PASSWORD = newPassword
       return "senha alterada"
     } catch (error) {
       return "token invalido"
     }
   }
-  getUserByEmail(email: string): User {
-    return this.users.find(user => user.EMAIL == email)
+  async getUserByEmail(email: string): Promise<User> {
+    let user = await getConnection().getRepository(User).createQueryBuilder().select('User').from(User, "user").where('user.email = :email', { email: email }).getOne()
+    return user
   }
-  getUserByCpf(cpf: string): User {
-    return this.users.find(user => user.CPF == cpf)
+  async getUserByCpf(cpf: string): Promise<User> {
+    let user = await getConnection().getRepository(User).createQueryBuilder().select('User').from(User, "user").where('user.cpf = :cpf', { cpf: cpf }).getOne()
+    return user
   }
-  addTipo(tipo: TipoStrings) {
-    let _tipo = Tipo[tipo] == 1 ? 1 : Tipo[tipo]
-    return _tipo
 
-  }
   addAccess(access: Array<Access>): Array<Access> {
     let _access
     return _access = this.handleAccess(access)
   }
+
   handleAccess(access: Array<Access>): Array<Access> {
     let accessArray: Array<Access> = []
     for (let i = 0; i < access.length; i++) {
@@ -148,3 +98,5 @@ export class UsersService {
     return accessArray
   }
 }
+
+

@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
@@ -19,12 +19,14 @@ export class UsersController {
     })
     @ApiBody({ type: CreateUserDto })
     async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+
         return this.usersService.create(createUserDto);
     }
-    @Put(':id')
+    @Put('/')
     @ApiBody({ type: CreateUserDto })
+    @ApiQuery({ name: 'id' })
     @ApiOperation({ summary: 'Update an user' })
-    updateOne(@Param('id') id: number, @Body() createUserDto: CreateUserDto): any {
+    updateOne(@Query('id') id: string, @Body() createUserDto: CreateUserDto): any {
         let user
         let response = this.usersService.updateUser(id, createUserDto).then(_user => {
             if (_user != null) return user = _user
@@ -33,15 +35,16 @@ export class UsersController {
         return response
 
     }
-    @Get(':id')
+    @Get('/id/')
     @ApiOperation({ summary: 'Get an single user' })
+    @ApiQuery({ name: 'id' })
     @ApiResponse({
         status: 200,
         description: 'The found record',
         type: User,
     })
-    findOne(@Param('id') id: string): User {
-        let user = this.usersService.findOne(+id).then(_user => user = _user);
+    findOne(@Query('id') id: string): User {
+        let user = this.usersService.findOne(id).then(_user => user = _user);
         return user
     }
     @Get()
@@ -51,30 +54,34 @@ export class UsersController {
         description: 'The found record',
         type: [User],
     })
-    findAll(): Promise<User[]> {
+    async findAll(): Promise<User[]> {
         return this.usersService.findAll();
     }
 
 
-    @Get('/recover/email/:email')
+    @Get('/recover/email')
     @ApiOperation({ summary: 'Reset password by email' })
+    @ApiQuery({ name: 'email' })
     @ApiResponse({
         status: 200,
         description: 'Check your e-mail!',
         type: User,
     })
-    resetPasswordByEmail(@Param('email') email: string): string {
+    resetPasswordByEmail(@Query('email') email: string): Promise<string> {
         return this.usersService.generateTokenByEmail(email)
     }
-    @Get('/recover/cpf/:cpf')
-    @ApiBody({ type: String })
-    @ApiOperation({ summary: 'Reset password by cpf' })
+    @Get('/recover/cpf')
+    @ApiOperation({
+        summary: 'Reset password by cpf'
+    })
+    @ApiQuery({ name: 'cpf' })
     @ApiResponse({
         status: 200,
-        description: 'Check your e-mail!',
+        description: 'Check your e-mail!'
     })
-    resetPasswordByCpf(@Param('cpf') cpf: string): String {
-        return this.usersService.generateTokenByCpf(cpf)
+    resetPasswordByCpf(@Query('cpf') cpf: string): Promise<String> {
+
+        return this.usersService.generateTokenByCpf(cpf).catch()
     }
     @Post('resetpassword/')
     @ApiBody({ type: String })
@@ -83,7 +90,7 @@ export class UsersController {
         status: 200,
         description: 'Reset password!'
     })
-    resetPassword(@Body() updatePassword: UpdatePasswordDto): string {
+    resetPassword(@Body() updatePassword: UpdatePasswordDto): Promise<string> {
         let text = this.usersService.getUserByToken(updatePassword.token, updatePassword.password)
         return text
     }

@@ -40,11 +40,11 @@ export class User {
     TOKEN_PASSWORD?: string;
 
     @ApiProperty()
-    @Column({ type: 'enum', enum:[Access] })
+    @Column({ type: 'set', enum: Access })
     ACCESS?: Array<Access>;
 
     @ApiProperty()
-    @Column({ type: 'enum', enum: Tipo, nullable:false })
+    @Column({ type: 'enum', enum: Tipo, nullable: false })
     TYPE?: Tipo;
 
 }

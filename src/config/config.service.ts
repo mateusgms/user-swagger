@@ -36,9 +36,15 @@ export class ConfigService {
       username: this.getValue('POSTGRES_USER'),
       password: this.getValue('POSTGRES_PASSWORD'),
       database: this.getValue('POSTGRES_DATABASE'),
-      autoLoadEntities: true,
-      synchronize: true,
-      entities: ["./entities/**/*.{.ts,.js}"]
+      entities: ['**/*.entity{.ts,.js}'],
+
+      migrationsTableName: 'migration',
+
+      migrations: ['src/migration/*.ts'],
+
+      cli: {
+        migrationsDir: 'src/migration',
+      },
     };
   }
 }
